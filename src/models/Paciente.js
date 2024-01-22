@@ -52,13 +52,21 @@ const pacienteSchema = new Schema({
         type:Boolean,
         default:true
     },
+
     veterinario:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Veterinario'
-    }
+    },
+    tratamientos:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Tratamiento'
+        }
+    ]
 },{
     timestamps:true
 })
+
 
 
 // Método para cifrar el password del paciente
