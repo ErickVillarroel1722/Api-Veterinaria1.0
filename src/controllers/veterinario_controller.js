@@ -29,15 +29,14 @@ const login = async (req, res) => {
 };
 
 // Metodo para mostrar el perfil
-const perfil = (req, res) => {
-	delete req.veterinarioBDD.token;
-	delete req.veterinarioBDD.confirmEmail;
-	delete req.veterinarioBDD.createdAt;
-	delete req.veterinarioBDD.updatedAt;
-	delete req.veterinarioBDD.__v;
-	res.status(200).json(req.veterinarioBDD);
-};
-
+const perfil =(req,res)=>{
+    delete req.veterinarioBDD.token
+    delete req.veterinarioBDD.confirmEmail
+    delete req.veterinarioBDD.createdAt
+    delete req.veterinarioBDD.updatedAt
+    delete req.veterinarioBDD.__v
+    res.status(200).json(req.veterinarioBDD)
+}
 // Metodo para el registro
 const registro = async (req, res) => {
 	const { email, password } = req.body;

@@ -29,4 +29,8 @@ const tratamientoSchema = new Schema({
     timestamps:true
 })
 
+<<<<<<< HEAD
 export default model('Tratamiento',tratamientoSchema)
+=======
+export default model('Tratamiento',tratamientoSchema)
+>>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85

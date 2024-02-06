@@ -7,22 +7,34 @@ const detalleTratamiento = async(req,res)=>{
     const tratamiento = await Tratamiento.findById(id).populate('paciente','_id nombre')
     res.status(200).json(tratamiento)
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
 const registrarTratamiento = async (req,res)=>{
     const {paciente} = req.body
     if( !mongoose.Types.ObjectId.isValid(paciente) ) return res.status(404).json({msg:`Lo sentimos, debe ser un id válido`});
     const tratamiento = await Tratamiento.create(req.body)
     res.status(200).json({msg:`Registro exitoso del tratamiento ${tratamiento._id}`,tratamiento})
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
 const actualizarTratamiento = async(req,res)=>{
     const {id} = req.params
     if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
     if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`});
+<<<<<<< HEAD
     await Tratamiento.findByIdAndUpdate(req.params.id,req.body)
     res.status(200).json({msg:"Actualización exitosa del paciente"})
 }
 
+=======
+    await Paciente.findByIdAndUpdate(req.params.id,req.body)
+    res.status(200).json({msg:"Actualización exitosa del tratamiento"})
+}
+>>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
 const eliminarTratamiento = async(req,res)=>{
     const {id} = req.params
     if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
