@@ -52,24 +52,13 @@ const pacienteSchema = new Schema({
         type:Boolean,
         default:true
     },
-<<<<<<< HEAD
-=======
-
->>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
     veterinario:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Veterinario'
-    },
-    tratamientos:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'Tratamiento'
-        }
-    ]
+    }
 },{
     timestamps:true
 })
-
 
 
 // Método para cifrar el password del paciente
@@ -84,5 +73,6 @@ pacienteSchema.methods.matchPassword = async function(password){
     const response = await bcrypt.compare(password,this.password)
     return response
 }
+
 
 export default model('Paciente',pacienteSchema)

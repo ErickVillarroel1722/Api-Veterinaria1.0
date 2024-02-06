@@ -30,5 +30,3 @@ router.post('/tratamiento/estado/:id',verificarAutenticacion,cambiarEstado)
 
 
 
-
-export default router

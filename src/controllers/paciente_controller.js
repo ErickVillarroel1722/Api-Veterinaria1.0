@@ -1,35 +1,36 @@
-<<<<<<< HEAD
-import mongoose from "mongoose"
-import { sendMailToPaciente } from "../config/nodemailer.js"
+// IMPORTAR EL MODELO
 import Paciente from "../models/Paciente.js"
-import generarJWT from "../helpers/crearJWT.js"
 import Tratamiento from "../models/Tratamiento.js"
 
+
+// IMPORTAR EL MÉTODO sendMailToPaciente
+import { sendMailToPaciente } from "../config/nodemailer.js"
+
+
+import mongoose from "mongoose"
+import generarJWT from "../helpers/crearJWT.js"
+
+
+
+
+// Método para el proceso de login
 const loginPaciente = async(req,res)=>{
     const {email,password} = req.body
 
     if (Object.values(req.body).includes("")) return res.status(404).json({msg:"Lo sentimos, debes llenar todos los campos"})
 
     const pacienteBDD = await Paciente.findOne({email})
+
     if(!pacienteBDD) return res.status(404).json({msg:"Lo sentimos, el usuario no se encuentra registrado"})
 
     const verificarPassword = await pacienteBDD.matchPassword(password)
+
     if(!verificarPassword) return res.status(404).json({msg:"Lo sentimos, el password no es el correcto"})
 
-=======
-import Paciente from "../models/Paciente.js"
-
-
-const loginPaciente = async(req,res)=>{
-    const {email,password} = req.body
-    if (Object.values(req.body).includes("")) return res.status(404).json({msg:"Lo sentimos, debes llenar todos los campos"})
-    const pacienteBDD = await Paciente.findOne({email})
-    if(!pacienteBDD) return res.status(404).json({msg:"Lo sentimos, el usuario no se encuentra registrado"})
-    const verificarPassword = await pacienteBDD.matchPassword(password)
-    if(!verificarPassword) return res.status(404).json({msg:"Lo sentimos, el password no es el correcto"})
->>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
     const token = generarJWT(pacienteBDD._id,"paciente")
-		const {nombre,propietario,email:emailP,celular,convencional,_id} = pacienteBDD
+
+	const {nombre,propietario,email:emailP,celular,convencional,_id} = pacienteBDD
+
     res.status(200).json({
         token,
         nombre,
@@ -40,10 +41,12 @@ const loginPaciente = async(req,res)=>{
         _id
     })
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
+
+
+
+
+// Método para ver el perfil 
 const perfilPaciente =(req,res)=>{
     delete req.pacienteBDD.ingreso
     delete req.pacienteBDD.sintomas
@@ -55,114 +58,139 @@ const perfilPaciente =(req,res)=>{
     delete req.pacienteBDD.__v
     res.status(200).json(req.pacienteBDD)
 }
-<<<<<<< HEAD
 
+
+
+
+
+
+// Método para listar todos los pacientes
 const listarPacientes = async (req,res)=>{
-    const pacientes = await Paciente.find({estado:true}).where('veterinario').
-    equals(req.veterinarioBDD).select("-salida -createdAt -updatedAt -__v").
-    populate('veterinario','_id nombre apellido email password')
-
-    res.status(200).json(pacientes)
-
-}
-=======
-const listarPacientes = async (req,res)=>{
+    // Obtener todos los pacientes que se enceuntren activos
+    // Que sean solo los del paciente que inicie sesión
+    // Quitar campos no necesarios 
+    // Mostrar campos de documentos relacionados
     const pacientes = await Paciente.find({estado:true}).where('veterinario').equals(req.veterinarioBDD).select("-salida -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
+    // Respuesta 
     res.status(200).json(pacientes)
 }
-import mongoose from "mongoose"
->>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
 
+
+
+// Método para ver el detalle de un paciente en particular
 const detallePaciente = async(req,res)=>{
     const {id} = req.params
     if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`});
     const paciente = await Paciente.findById(id).select("-createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
     const tratamientos = await Tratamiento.find({estado:true}).where('paciente').equals(id)
-<<<<<<< HEAD
-    console.log(tratamientos)
-=======
->>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
     res.status(200).json({
         paciente,
         tratamientos
     })
 }
-<<<<<<< HEAD
 
+
+
+
+
+
+// Método para registrar un paciente
 const registrarPaciente = async(req,res)=>{
-    //desestructura el email
+
+    // desestructurar el email
     const {email} = req.body
 
-    //validar los campos
-    if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
 
-    //verficar si el paciente ya se encuentra registrado
+    //  Validar todos los camposs
+    if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
+    
+    
+    // Obtener el usuario en base al email
     const verificarEmailBDD = await Paciente.findOne({email})
 
-    //crear un password
+
+    // Verificar si el paciente ya se encuentra registrado
     if(verificarEmailBDD) return res.status(400).json({msg:"Lo sentimos, el email ya se encuentra registrado"})
+
+
+
+    
+
+    // Crear una instancia del Paciente
     const nuevoPaciente = new Paciente(req.body)
 
+
+    // Crear un password
     const password = Math.random().toString(36).slice(2)
+
+
+    // Encriptar el password
     nuevoPaciente.password = await nuevoPaciente.encrypPassword("vet"+password)
 
-    //enviar el correo electronico
+
+    // Enviar el correo electrónico
     await sendMailToPaciente(email,"vet"+password)
 
-    //asociar el paciente con el veterinario
+
+    // Asociar el paciente con el veterinario
     nuevoPaciente.veterinario=req.veterinarioBDD._id
 
-    //guardar nuevo paciente
+
+    // Guardar en BDD
     await nuevoPaciente.save()
+
+    // Presentar resultados
     res.status(200).json({msg:"Registro exitoso del paciente y correo enviado"})
 }
 
-=======
-const registrarPaciente = async(req,res)=>{
-    const {email} = req.body
-    if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
-    const verificarEmailBDD = await Paciente.findOne({email})
-    if(verificarEmailBDD) return res.status(400).json({msg:"Lo sentimos, el email ya se encuentra registrado"})
-    const nuevoPaciente = new Paciente(req.body)
-    const password = Math.random().toString(36).slice(2)
-    nuevoPaciente.password = await nuevoPaciente.encrypPassword("vet"+password)
-    await sendMailToPaciente(email,"vet"+password)
-    nuevoPaciente.veterinario=req.veterinarioBDD._id
-    await nuevoPaciente.save()
-    res.status(200).json({msg:"Registro exitoso del paciente y correo enviado"})
-}
->>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
+
+
+
+// Método para actualizar un paciente
 const actualizarPaciente = async(req,res)=>{
     const {id} = req.params
+
     if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
+
     if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`});
+
     await Paciente.findByIdAndUpdate(req.params.id,req.body)
+
     res.status(200).json({msg:"Actualización exitosa del paciente"})
 }
 
+
+
+
+
+
+
+// Método para eliminar(dar de baja) un paciente
 const eliminarPaciente = async (req,res)=>{
     const {id} = req.params
+
     if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
+
     if( !mongoose.Types.ObjectId.isValid(id) ) return res.status(404).json({msg:`Lo sentimos, no existe el veterinario ${id}`})
+
     const {salida} = req.body
+
     await Paciente.findByIdAndUpdate(req.params.id,{salida:Date.parse(salida),estado:false})
+    
     res.status(200).json({msg:"Fecha de salida del paciente registrado exitosamente"})
 }
 
+
+
+
+
+
 export {
 		loginPaciente,
-<<<<<<< HEAD
-		perfilPaciente, 
-=======
 		perfilPaciente,
->>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
         listarPacientes,
         detallePaciente,
         registrarPaciente,
         actualizarPaciente,
         eliminarPaciente
-<<<<<<< HEAD
 }
-=======
-    }
->>>>>>> 20803d574c11b38f9213758187dd98d7d6c40b85
